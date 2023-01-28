@@ -1,44 +1,25 @@
 const { Router } = require("express");
-const jobModel = require("../Models/quiz.model");
+const quizModel = require("../Models/quiz.model");
 const app = Router();
 
 app.get("/", async (req, res) => {
+  const{page=1,limit=1,orderBy="id",order="asc"}=req.query
   try {
-    let jobdata = await jobModel.find();
-    res.send({ message: "signups", data: jobdata });
+    let quizdata = await quizModel.find().skip((page-1)*limit)
+    .limit(limit);
+    res.send({ message: "signups", data: quizdata });
   } catch (e) {
     console.log(e);
   }
 });
 app.post("/", async (req, res) => {
   try {
-    let jobdata = await jobModel.create(req.body);
-    res.send({ message: "signups", data: jobdata });
+    let quizdata = await quizModel.create(req.body);
+    res.send({ message: "signups", data: quizdata });
   } catch (e) {
     console.log(e);
   }
 });
 
-// delete
-app.delete("/:id", async (req, res) => {
-    try {
-      const user = await jobModel.findByIdAndDelete(req.params.id);
-      res.send(user);
-    } catch (error) {
-      res.status(500).send(error.message);
-    }
-  });
-  
-  //patch
-  app.patch("/:id", async (req, res) => {
-    try {
-      const user = await jobModel.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-      });
-      res.send(user);
-    } catch (error) {
-      res.status(500).send(error.message);
-    }
-  });
 
 module.exports=app
